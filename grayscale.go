@@ -44,7 +44,7 @@ func grayscale(in *image.RGBA) (*image.RGBA, error) {
 		outBuf,
 	)
 	if ret != C.int(0) {
-		return nil, fmt.Errorf("failed to rotate90")
+		return nil, fmt.Errorf("failed to grayscale")
 	}
 	return out, nil
 }

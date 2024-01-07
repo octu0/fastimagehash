@@ -1,4 +1,4 @@
-// +build ignore
+//go:build ignore
 
 #include <Halide.h>
 #include "grayscale.hpp"
@@ -22,28 +22,22 @@ Func grayscale(Func input, Expr width, Expr height) {
   Expr r = cast<float>(in(x, y, 0));
   Expr g = cast<float>(in(x, y, 1));
   Expr b = cast<float>(in(x, y, 2));
-  Expr a = cast<float>(in(x, y, 3));
+  Expr a = in(x, y, 3);
   Expr sum = (r * gray_r_bt709) + (g * gray_g_bt709) + (b * gray_b_bt709);
-  Expr sumi16 = cast<int16_t>(sum);
-  Expr value = cast<uint8_t>(sumi16 >> 8);
+  Expr value = cast<uint8_t>(sum);
 
-  fn(x, y, ch) = cast<uint8_t>(255);
-  fn(x, y, 0) = value; 
-  fn(x, y, 1) = value; 
-  fn(x, y, 2) = value; 
-  fn(x, y, 3) = cast<uint8_t>(a); 
-
+  fn(x, y, ch) = select(
+    ch == 3, cast<uint8_t>(255),
+    value
+  );
   // schedule
-  fn.update(0).unscheduled();
-  fn.update(1).unscheduled();
-  fn.update(2).unscheduled();
-  fn.update(3).unscheduled();
   fn.compute_at(in, ti)
-    .tile(x, y, xo, yo, xi, yi, 32, 32)
+    .store_at(in, ti)
+    .tile(x, y, xo, yo, xi, yi, 8, 8)
     .fuse(xo, yo, ti)
     .parallel(ch)
     .parallel(ti, 8)
-    .vectorize(xi, 32);
+    .vectorize(xi);
   return fn;
 }
 
