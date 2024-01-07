@@ -1,0 +1,9 @@
+*.swp
+.DS_Store
+*.dSYM
+*.out
+.Halide-*
+.halide
+
+gen/*.out
+gen/*.out.dSYM
