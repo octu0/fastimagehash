@@ -60,3 +60,11 @@ func rgbaGrayscale(out []byte, in []byte, width, height int) error {
 	}
 	return nil
 }
+
+func rgbaGrayscaleToGray(rgba []byte) []byte {
+	out := make([]byte, 0, len(rgba)/4)
+	for i := 0; i < len(rgba); i += 4 {
+		out = append(out, rgba[i])
+	}
+	return out
+}

@@ -17,19 +17,12 @@ func AverageHash(img *image.RGBA) (Hash1024, error) {
 	if err != nil {
 		return Hash1024{}, errors.WithStack(err)
 	}
+
 	// [gray] = [gray, gray, gray, alpha]
-	gray := grayOnly(grayRGBA.Pix)
+	gray := rgbaGrayscaleToGray(grayRGBA.Pix)
 
 	avg4 := average16x16(gray)
-	return hash16x16(gray, avg4), nil
-}
-
-func grayOnly(rgba []byte) []byte {
-	out := make([]byte, 0, len(rgba)/4)
-	for i := 0; i < len(rgba); i += 4 {
-		out = append(out, rgba[i])
-	}
-	return out
+	return avghash16x16(gray, avg4), nil
 }
 
 func average16x16(gray []byte) [4]uint32 {
@@ -41,24 +34,24 @@ func average16x16(gray []byte) [4]uint32 {
 	}
 }
 
-func hash16x16(gray []byte, avg4 [4]uint32) Hash1024 {
+func avghash16x16(gray []byte, avg4 [4]uint32) Hash1024 {
 	return [16]uint64{
-		hash8x8(gray[0:64], avg4[0]),
-		hash8x8(gray[64:128], avg4[0]),
-		hash8x8(gray[128:192], avg4[0]),
-		hash8x8(gray[192:256], avg4[0]),
-		hash8x8(gray[256:320], avg4[1]),
-		hash8x8(gray[320:384], avg4[1]),
-		hash8x8(gray[384:448], avg4[1]),
-		hash8x8(gray[448:512], avg4[1]),
-		hash8x8(gray[512:576], avg4[2]),
-		hash8x8(gray[576:640], avg4[2]),
-		hash8x8(gray[640:704], avg4[2]),
-		hash8x8(gray[704:768], avg4[2]),
-		hash8x8(gray[768:832], avg4[3]),
-		hash8x8(gray[832:896], avg4[3]),
-		hash8x8(gray[896:960], avg4[3]),
-		hash8x8(gray[960:1024], avg4[3]),
+		avghash8x8(gray[0:64], avg4[0]),
+		avghash8x8(gray[64:128], avg4[0]),
+		avghash8x8(gray[128:192], avg4[0]),
+		avghash8x8(gray[192:256], avg4[0]),
+		avghash8x8(gray[256:320], avg4[1]),
+		avghash8x8(gray[320:384], avg4[1]),
+		avghash8x8(gray[384:448], avg4[1]),
+		avghash8x8(gray[448:512], avg4[1]),
+		avghash8x8(gray[512:576], avg4[2]),
+		avghash8x8(gray[576:640], avg4[2]),
+		avghash8x8(gray[640:704], avg4[2]),
+		avghash8x8(gray[704:768], avg4[2]),
+		avghash8x8(gray[768:832], avg4[3]),
+		avghash8x8(gray[832:896], avg4[3]),
+		avghash8x8(gray[896:960], avg4[3]),
+		avghash8x8(gray[960:1024], avg4[3]),
 	}
 }
 
@@ -70,7 +63,7 @@ func averageUint32(values []byte) uint32 {
 	return sum / uint32(len(values))
 }
 
-func hash8x8(values []byte, avg uint32) uint64 {
+func avghash8x8(values []byte, avg uint32) uint64 {
 	index := uint64(0)
 	for i := 0; i < 64; i += 1 {
 		if avg < uint32(values[i]) {
