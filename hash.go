@@ -13,6 +13,27 @@ var (
 	ErrHash1024InvalidSize = errors.New("invalid hash1024 size")
 )
 
+type Hash64 [1]uint64
+
+func (h Hash64) Bytes() []byte {
+	b := make([]byte, 8)
+	binary.BigEndian.PutUint64(b, h[0])
+	return b
+}
+
+func (h Hash64) Hex() string {
+	return hex.EncodeToString(h.Bytes())
+}
+
+func (h Hash64) String() string {
+	return h.Hex()
+}
+
+func (h Hash64) Distance(o Hash64) int {
+	hamming := uint64(h[0] ^ o[0])
+	return bits.OnesCount64(hamming)
+}
+
 type Hash1024 [16]uint64
 
 func (h Hash1024) Bytes() []byte {

@@ -49,7 +49,21 @@ static void init_rgba_dim(halide_dimension_t *dim, int32_t width, int32_t height
   dim[2].flags = 0;
 }
 
-static halide_buffer_t *create_buffer(uint8_t *data, halide_dimension_t *dim, int dimensions, struct halide_type_t halide_type) {
+static void init_2d_dim(halide_dimension_t *dim, int32_t width, int32_t height) {
+  // width
+  dim[0].min = 0;
+  dim[0].extent = width;
+  dim[0].stride = 1;
+  dim[0].flags = 0;
+
+  // height
+  dim[1].min = 0;
+  dim[1].extent = height;
+  dim[1].stride = width;
+  dim[1].flags = 0;
+}
+
+static halide_buffer_t *create_buffer(void *data, halide_dimension_t *dim, int dimensions, struct halide_type_t halide_type) {
   halide_buffer_t *buffer = (halide_buffer_t *) malloc(sizeof(halide_buffer_t));
   if(buffer == NULL) {
     return NULL;
@@ -82,24 +96,89 @@ static halide_buffer_t *create_halide_buffer_rgba(uint8_t *data, int width, int 
   }
   return buf;
 }
+
+static halide_buffer_t *create_halide_buffer_2d_uint8(uint8_t *data, int width, int height) {
+  int dimensions = 2;
+  halide_dimension_t *dim = (halide_dimension_t *) malloc(dimensions * sizeof(halide_dimension_t));
+  if(NULL == dim) {
+    return NULL;
+  }
+  memset(dim, 0, dimensions * sizeof(halide_dimension_t));
+  init_2d_dim(dim, width, height);
+
+  halide_buffer_t *buf = create_buffer(data, dim, dimensions, halide_uint8_t);
+  if(NULL == buf) {
+    free(dim);
+    return NULL;
+  }
+  return buf;
+}
+
+static halide_buffer_t *create_halide_buffer_2d_float(float *data, int width, int height) {
+  int dimensions = 2;
+  halide_dimension_t *dim = (halide_dimension_t *) malloc(dimensions * sizeof(halide_dimension_t));
+  if(NULL == dim) {
+    return NULL;
+  }
+  memset(dim, 0, dimensions * sizeof(halide_dimension_t));
+  init_2d_dim(dim, width, height);
+
+  halide_buffer_t *buf = create_buffer(data, dim, dimensions, halide_float_t);
+  if(NULL == buf) {
+    free(dim);
+    return NULL;
+  }
+  return buf;
+}
 */
 import "C"
 
 import (
-	"fmt"
 	"unsafe"
+
+	"github.com/pkg/errors"
 
 	_ "github.com/benesch/cgosymbolizer"
 )
 
+var (
+	ErrHalideBufferRGBA      = errors.New("failed to create_halide_buffer_rgba")
+	ErrHalideBuffer2DUint8   = errors.New("failed to create_halide_buffer_2d_uint8")
+	ErrHalideBuffer2DFloat32 = errors.New("failed to create_halide_buffer_2d_float")
+)
+
 func HalideBufferRGBA(data []byte, width, height int) (*C.halide_buffer_t, error) {
 	buf := unsafe.Pointer(C.create_halide_buffer_rgba(
-		(*C.uchar)(unsafe.Pointer(&data[0])),
+		(*C.uint8_t)(unsafe.Pointer(&data[0])),
 		C.int(width),
 		C.int(height),
 	))
 	if buf == nil {
-		return nil, fmt.Errorf("failed to create_halide_buffer_rgba")
+		return nil, errors.WithStack(ErrHalideBufferRGBA)
+	}
+	return (*C.halide_buffer_t)(buf), nil
+}
+
+func HalideBuffer2DUint8(data []uint8, width, height int) (*C.halide_buffer_t, error) {
+	buf := unsafe.Pointer(C.create_halide_buffer_2d_uint8(
+		(*C.uint8_t)(unsafe.Pointer(&data[0])),
+		C.int(width),
+		C.int(height),
+	))
+	if buf == nil {
+		return nil, errors.WithStack(ErrHalideBuffer2DUint8)
+	}
+	return (*C.halide_buffer_t)(buf), nil
+}
+
+func HalideBuffer2DFloat32(data []float32, width, height int) (*C.halide_buffer_t, error) {
+	buf := unsafe.Pointer(C.create_halide_buffer_2d_float(
+		(*C.float)(unsafe.Pointer(&data[0])),
+		C.int(width),
+		C.int(height),
+	))
+	if buf == nil {
+		return nil, errors.WithStack(ErrHalideBuffer2DFloat32)
 	}
 	return (*C.halide_buffer_t)(buf), nil
 }
