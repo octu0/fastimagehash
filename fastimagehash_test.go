@@ -13,6 +13,14 @@ import (
 var (
 	//go:embed testdata/src.png
 	testPngImg []byte
+	//go:embed testdata/blend.png
+	testPngBlendImg []byte
+	//go:embed testdata/blur.png
+	testPngBlurImg []byte
+	//go:embed testdata/catA_1.png
+	testPngCatA1Img []byte
+	//go:embed testdata/catA_2.png
+	testPngCatA2Img []byte
 )
 
 func pngToRGBA(data []byte) (*image.RGBA, error) {
