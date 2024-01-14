@@ -26,17 +26,17 @@ var (
 //go:generate go run ./cmd/compile f dct2d dct.cpp
 func dct2d(in []byte, width, height int) ([]float32, error) {
 	out := make([]float32, width*height)
-	outBuf, err := HalideBuffer2DFloat32(out, width, height)
+	outBuf, err := halideBuffer2DFloat32(out, width, height)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(outBuf)
+	defer halideBufferFree(outBuf)
 
-	inBuf, err := HalideBuffer2DUint8(in, width, height)
+	inBuf, err := halideBuffer2DUint8(in, width, height)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(inBuf)
+	defer halideBufferFree(inBuf)
 
 	ret := C.dct2d(
 		inBuf,

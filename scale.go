@@ -42,17 +42,17 @@ func scaleNormal(in *image.RGBA, scaleWidth, scaleHeight int) (*image.RGBA, erro
 	width, height := in.Rect.Dx(), in.Rect.Dy()
 
 	out := image.NewRGBA(image.Rect(0, 0, scaleWidth, scaleHeight))
-	outBuf, err := HalideBufferRGBA(out.Pix, scaleWidth, scaleHeight)
+	outBuf, err := halideBufferRGBA(out.Pix, scaleWidth, scaleHeight)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(outBuf)
+	defer halideBufferFree(outBuf)
 
-	inBuf, err := HalideBufferRGBA(in.Pix, width, height)
+	inBuf, err := halideBufferRGBA(in.Pix, width, height)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(inBuf)
+	defer halideBufferFree(inBuf)
 
 	ret := C.scale_normal(
 		inBuf,
@@ -73,17 +73,17 @@ func scaleBox(in *image.RGBA, scaleWidth, scaleHeight int) (*image.RGBA, error) 
 	width, height := in.Rect.Dx(), in.Rect.Dy()
 
 	out := image.NewRGBA(image.Rect(0, 0, scaleWidth, scaleHeight))
-	outBuf, err := HalideBufferRGBA(out.Pix, scaleWidth, scaleHeight)
+	outBuf, err := halideBufferRGBA(out.Pix, scaleWidth, scaleHeight)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(outBuf)
+	defer halideBufferFree(outBuf)
 
-	inBuf, err := HalideBufferRGBA(in.Pix, width, height)
+	inBuf, err := halideBufferRGBA(in.Pix, width, height)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(inBuf)
+	defer halideBufferFree(inBuf)
 
 	ret := C.scale_box(
 		inBuf,
@@ -104,17 +104,17 @@ func scaleLinear(in *image.RGBA, scaleWidth, scaleHeight int) (*image.RGBA, erro
 	width, height := in.Rect.Dx(), in.Rect.Dy()
 
 	out := image.NewRGBA(image.Rect(0, 0, scaleWidth, scaleHeight))
-	outBuf, err := HalideBufferRGBA(out.Pix, scaleWidth, scaleHeight)
+	outBuf, err := halideBufferRGBA(out.Pix, scaleWidth, scaleHeight)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(outBuf)
+	defer halideBufferFree(outBuf)
 
-	inBuf, err := HalideBufferRGBA(in.Pix, width, height)
+	inBuf, err := halideBufferRGBA(in.Pix, width, height)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(inBuf)
+	defer halideBufferFree(inBuf)
 
 	ret := C.scale_linear(
 		inBuf,
@@ -135,17 +135,17 @@ func scaleGauss(in *image.RGBA, scaleWidth, scaleHeight int) (*image.RGBA, error
 	width, height := in.Rect.Dx(), in.Rect.Dy()
 
 	out := image.NewRGBA(image.Rect(0, 0, scaleWidth, scaleHeight))
-	outBuf, err := HalideBufferRGBA(out.Pix, scaleWidth, scaleHeight)
+	outBuf, err := halideBufferRGBA(out.Pix, scaleWidth, scaleHeight)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(outBuf)
+	defer halideBufferFree(outBuf)
 
-	inBuf, err := HalideBufferRGBA(in.Pix, width, height)
+	inBuf, err := halideBufferRGBA(in.Pix, width, height)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(inBuf)
+	defer halideBufferFree(inBuf)
 
 	ret := C.scale_gauss(
 		inBuf,

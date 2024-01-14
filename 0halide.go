@@ -1,7 +1,5 @@
 package fastimagehash
 
-//go:generate go run ./cmd/download
-
 /*
 #cgo amd64 CFLAGS: -I${SRCDIR}/include/amd64
 #cgo arm64 CFLAGS: -I${SRCDIR}/include/arm64
@@ -147,7 +145,12 @@ var (
 	ErrHalideBuffer2DFloat32 = errors.New("failed to create_halide_buffer_2d_float")
 )
 
-func HalideBufferRGBA(data []byte, width, height int) (*C.halide_buffer_t, error) {
+//go:generate go run ./cmd/download
+func init() {
+	// nop
+}
+
+func halideBufferRGBA(data []byte, width, height int) (*C.halide_buffer_t, error) {
 	buf := unsafe.Pointer(C.create_halide_buffer_rgba(
 		(*C.uint8_t)(unsafe.Pointer(&data[0])),
 		C.int(width),
@@ -159,7 +162,7 @@ func HalideBufferRGBA(data []byte, width, height int) (*C.halide_buffer_t, error
 	return (*C.halide_buffer_t)(buf), nil
 }
 
-func HalideBuffer2DUint8(data []uint8, width, height int) (*C.halide_buffer_t, error) {
+func halideBuffer2DUint8(data []uint8, width, height int) (*C.halide_buffer_t, error) {
 	buf := unsafe.Pointer(C.create_halide_buffer_2d_uint8(
 		(*C.uint8_t)(unsafe.Pointer(&data[0])),
 		C.int(width),
@@ -171,7 +174,7 @@ func HalideBuffer2DUint8(data []uint8, width, height int) (*C.halide_buffer_t, e
 	return (*C.halide_buffer_t)(buf), nil
 }
 
-func HalideBuffer2DFloat32(data []float32, width, height int) (*C.halide_buffer_t, error) {
+func halideBuffer2DFloat32(data []float32, width, height int) (*C.halide_buffer_t, error) {
 	buf := unsafe.Pointer(C.create_halide_buffer_2d_float(
 		(*C.float)(unsafe.Pointer(&data[0])),
 		C.int(width),
@@ -183,6 +186,6 @@ func HalideBuffer2DFloat32(data []float32, width, height int) (*C.halide_buffer_
 	return (*C.halide_buffer_t)(buf), nil
 }
 
-func HalideFreeBuffer(buf *C.halide_buffer_t) {
+func halideBufferFree(buf *C.halide_buffer_t) {
 	C.free_halide_buffer(buf)
 }

@@ -42,23 +42,23 @@ func haarX(in []byte, width, height int) ([]float32, []float32, error) {
 	lo := make([]float32, (width/2)*height)
 	hi := make([]float32, (width/2)*height)
 
-	loBuf, err := HalideBuffer2DFloat32(lo, width/2, height)
+	loBuf, err := halideBuffer2DFloat32(lo, width/2, height)
 	if err != nil {
 		return nil, nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(loBuf)
+	defer halideBufferFree(loBuf)
 
-	hiBuf, err := HalideBuffer2DFloat32(hi, width/2, height)
+	hiBuf, err := halideBuffer2DFloat32(hi, width/2, height)
 	if err != nil {
 		return nil, nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(hiBuf)
+	defer halideBufferFree(hiBuf)
 
-	inBuf, err := HalideBuffer2DUint8(in, width, height)
+	inBuf, err := halideBuffer2DUint8(in, width, height)
 	if err != nil {
 		return nil, nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(inBuf)
+	defer halideBufferFree(inBuf)
 
 	ret := C.haar_x(
 		inBuf,
@@ -78,23 +78,23 @@ func haarY(in []byte, width, height int) ([]float32, []float32, error) {
 	lo := make([]float32, width*(height/2))
 	hi := make([]float32, width*(height/2))
 
-	loBuf, err := HalideBuffer2DFloat32(lo, width, height/2)
+	loBuf, err := halideBuffer2DFloat32(lo, width, height/2)
 	if err != nil {
 		return nil, nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(loBuf)
+	defer halideBufferFree(loBuf)
 
-	hiBuf, err := HalideBuffer2DFloat32(hi, width, height/2)
+	hiBuf, err := halideBuffer2DFloat32(hi, width, height/2)
 	if err != nil {
 		return nil, nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(hiBuf)
+	defer halideBufferFree(hiBuf)
 
-	inBuf, err := HalideBuffer2DUint8(in, width, height)
+	inBuf, err := halideBuffer2DUint8(in, width, height)
 	if err != nil {
 		return nil, nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(inBuf)
+	defer halideBufferFree(inBuf)
 
 	ret := C.haar_y(
 		inBuf,
@@ -114,23 +114,23 @@ func haar(in []byte, width, height int) ([]float32, []float32, error) {
 	lo := make([]float32, (width*height)/2)
 	hi := make([]float32, (width*height)/2)
 
-	loBuf, err := HalideBuffer2DFloat32(lo, width/2, height/2)
+	loBuf, err := halideBuffer2DFloat32(lo, width/2, height/2)
 	if err != nil {
 		return nil, nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(loBuf)
+	defer halideBufferFree(loBuf)
 
-	hiBuf, err := HalideBuffer2DFloat32(hi, width/2, height/2)
+	hiBuf, err := halideBuffer2DFloat32(hi, width/2, height/2)
 	if err != nil {
 		return nil, nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(hiBuf)
+	defer halideBufferFree(hiBuf)
 
-	inBuf, err := HalideBuffer2DUint8(in, width, height)
+	inBuf, err := halideBuffer2DUint8(in, width, height)
 	if err != nil {
 		return nil, nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(inBuf)
+	defer halideBufferFree(inBuf)
 
 	ret := C.haar(
 		inBuf,
@@ -149,17 +149,17 @@ func haar(in []byte, width, height int) ([]float32, []float32, error) {
 func haarHi(in []byte, width, height int) ([]float32, error) {
 	hi := make([]float32, (width*height)/2)
 
-	hiBuf, err := HalideBuffer2DFloat32(hi, width/2, height/2)
+	hiBuf, err := halideBuffer2DFloat32(hi, width/2, height/2)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(hiBuf)
+	defer halideBufferFree(hiBuf)
 
-	inBuf, err := HalideBuffer2DUint8(in, width, height)
+	inBuf, err := halideBuffer2DUint8(in, width, height)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(inBuf)
+	defer halideBufferFree(inBuf)
 
 	ret := C.haar_hi(
 		inBuf,

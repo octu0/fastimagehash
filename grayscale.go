@@ -29,18 +29,18 @@ var (
 func grayscale(in *image.RGBA) (*image.RGBA, error) {
 	width, height := in.Rect.Dx(), in.Rect.Dy()
 
-	inBuf, err := HalideBufferRGBA(in.Pix, width, height)
+	inBuf, err := halideBufferRGBA(in.Pix, width, height)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(inBuf)
+	defer halideBufferFree(inBuf)
 
 	out := image.NewRGBA(image.Rect(0, 0, width, height))
-	outBuf, err := HalideBufferRGBA(out.Pix, width, height)
+	outBuf, err := halideBufferRGBA(out.Pix, width, height)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	defer HalideFreeBuffer(outBuf)
+	defer halideBufferFree(outBuf)
 
 	ret := C.grayscale(
 		inBuf,
@@ -52,12 +52,4 @@ func grayscale(in *image.RGBA) (*image.RGBA, error) {
 		return nil, errors.WithStack(ErrGrayscale)
 	}
 	return out, nil
-}
-
-func rgbaGrayscaleToGray(rgba []byte) []byte {
-	out := make([]byte, 0, len(rgba)/4)
-	for i := 0; i < len(rgba); i += 4 {
-		out = append(out, rgba[i])
-	}
-	return out
 }

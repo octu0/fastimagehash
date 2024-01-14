@@ -8,27 +8,34 @@ using namespace Halide;
 const Expr pi = cast<float>(3.14159265f);
 const Expr isqrt2 = cast<float>(1.0f / sqrt(2.0f));
 
-Func dctReadFloat(Func input) {
-  Var x("x"), y("y"), ch("ch");
-  Func in = Func("dctReadFloat");
-  in(x, y, ch) = cast<float>(input(x, y, ch));
-  return in;
-}
-
 Func dct2d(Func input, Expr width, Expr height) {
   Var x("x"), y("y");
   Var xo("xo"), xi("xi");
   Var yo("yo"), yi("yi");
 
-  Expr N = cast<float>(height);
+  Expr W = cast<float>(width);
+  Expr H = cast<float>(height);
+
+  Func cos_x = Func("cos_x");
+  Expr x_a = sqrt(2.0f / W);
+  Expr x_b = select(x == 0, isqrt2, 1.0f);
+  Expr x_c = pi * (2 * x + 1) * y / (2 * W);
+  Expr x_d = x_a * x_c * x_b;
+  cos_x(x, y) = x_d;
+
+  Func cos_y = Func("cos_y");
+  Expr y_a = sqrt(2.0f / H);
+  Expr y_b = select(y == 0, isqrt2, 1.0f);
+  Expr y_c = pi * (2 * x + 1) * y / (2 * H);
+  Expr y_d = y_a * y_c * y_b;
+  cos_y(x, y) = y_d;
 
   Func fn = Func("dct2d");
-  RDom rd = RDom(0, height - 1);
-  Expr a = sqrt(2.0f / N);
-  Expr b = select(y == 0, isqrt2, 1.0f);
-  Expr c = pi * (2 * x + 1) * y / (2 * N);
-  Expr d = a * c * b;
-  fn(x, y) = sum(input(x, rd) * cos(d));
+  RDom rd_w = RDom(0, width);
+  RDom rd_h = RDom(0, height);
+  Expr dx = sum(input(x, rd_h) * cos_x(x, rd_h) * cos_y(x, rd_h));
+  Expr dy = sum(input(rd_w, y) * cos_x(rd_w, y) * cos_y(rd_w, y));
+  fn(x, y) =  dx * dy;
 
   fn.compute_at(input, y)
     .tile(x, y, xi, yi, 8, 8)
