@@ -3,7 +3,6 @@ package fastimagehash
 import (
 	"bytes"
 	"image"
-	"image/color"
 	"image/png"
 	"os"
 
@@ -32,18 +31,10 @@ func pngToRGBA(data []byte) (*image.RGBA, error) {
 		return i, nil
 	}
 
-	b := img.Bounds()
-	rgba := image.NewRGBA(b)
-	for y := b.Min.Y; y < b.Max.Y; y += 1 {
-		for x := b.Min.X; x < b.Max.X; x += 1 {
-			c := color.RGBAModel.Convert(img.At(x, y))
-			rgba.Set(x, y, c)
-		}
-	}
-	return rgba, nil
+	return convertRGBAModel(img), nil
 }
 
-func saveImage(img *image.RGBA) (string, error) {
+func saveImage(img image.Image) (string, error) {
 	out, err := os.CreateTemp("/tmp", "out*.png")
 	if err != nil {
 		return "", err

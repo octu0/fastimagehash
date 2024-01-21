@@ -47,6 +47,20 @@ static void init_rgba_dim(halide_dimension_t *dim, int32_t width, int32_t height
   dim[2].flags = 0;
 }
 
+static void init_yuv_dim(halide_dimension_t *dim, int32_t stride, int32_t width, int32_t height) {
+  // width
+  dim[0].min = 0;
+  dim[0].extent = width;
+  dim[0].stride = 1;
+  dim[0].flags = 0;
+
+  // height
+  dim[1].min = 0;
+  dim[1].extent = height;
+  dim[1].stride = stride;
+  dim[1].flags = 0;
+}
+
 static void init_2d_dim(halide_dimension_t *dim, int32_t width, int32_t height) {
   // width
   dim[0].min = 0;
@@ -61,7 +75,7 @@ static void init_2d_dim(halide_dimension_t *dim, int32_t width, int32_t height) 
   dim[1].flags = 0;
 }
 
-static halide_buffer_t *create_buffer(void *data, halide_dimension_t *dim, int dimensions, struct halide_type_t halide_type) {
+static halide_buffer_t *create_buffer(void *data, halide_dimension_t *dim, int32_t dimensions, struct halide_type_t halide_type) {
   halide_buffer_t *buffer = (halide_buffer_t *) malloc(sizeof(halide_buffer_t));
   if(buffer == NULL) {
     return NULL;
@@ -78,8 +92,8 @@ static halide_buffer_t *create_buffer(void *data, halide_dimension_t *dim, int d
   return buffer;
 }
 
-static halide_buffer_t *create_halide_buffer_rgba(uint8_t *data, int width, int height) {
-  int dimensions = 3;
+static halide_buffer_t *create_halide_buffer_rgba(uint8_t *data, int32_t width, int32_t height) {
+  int32_t dimensions = 3;
   halide_dimension_t *dim = (halide_dimension_t *) malloc(dimensions * sizeof(halide_dimension_t));
   if(NULL == dim) {
     return NULL;
@@ -95,8 +109,25 @@ static halide_buffer_t *create_halide_buffer_rgba(uint8_t *data, int width, int 
   return buf;
 }
 
-static halide_buffer_t *create_halide_buffer_2d_uint8(uint8_t *data, int width, int height) {
-  int dimensions = 2;
+static halide_buffer_t *create_halide_buffer_yuv(uint8_t *data, int32_t stride, int32_t width, int32_t height) {
+  int32_t dimensions = 2;
+  halide_dimension_t *dim = (halide_dimension_t *) malloc(dimensions * sizeof(halide_dimension_t));
+  if(NULL == dim) {
+    return NULL;
+  }
+  memset(dim, 0, dimensions * sizeof(halide_dimension_t));
+  init_yuv_dim(dim, stride, width, height);
+
+  halide_buffer_t *buf = create_buffer(data, dim, dimensions, halide_uint8_t);
+  if(NULL == buf) {
+    free(dim);
+    return NULL;
+  }
+  return buf;
+}
+
+static halide_buffer_t *create_halide_buffer_2d_uint8(uint8_t *data, int32_t width, int32_t height) {
+  int32_t dimensions = 2;
   halide_dimension_t *dim = (halide_dimension_t *) malloc(dimensions * sizeof(halide_dimension_t));
   if(NULL == dim) {
     return NULL;
@@ -112,8 +143,8 @@ static halide_buffer_t *create_halide_buffer_2d_uint8(uint8_t *data, int width, 
   return buf;
 }
 
-static halide_buffer_t *create_halide_buffer_2d_float(float *data, int width, int height) {
-  int dimensions = 2;
+static halide_buffer_t *create_halide_buffer_2d_float(float *data, int32_t width, int32_t height) {
+  int32_t dimensions = 2;
   halide_dimension_t *dim = (halide_dimension_t *) malloc(dimensions * sizeof(halide_dimension_t));
   if(NULL == dim) {
     return NULL;
@@ -141,6 +172,7 @@ import (
 
 var (
 	ErrHalideBufferRGBA      = errors.New("failed to create_halide_buffer_rgba")
+	ErrHalideBufferYUV       = errors.New("failed to create_halide_buffer_yuv")
 	ErrHalideBuffer2DUint8   = errors.New("failed to create_halide_buffer_2d_uint8")
 	ErrHalideBuffer2DFloat32 = errors.New("failed to create_halide_buffer_2d_float")
 )
@@ -158,6 +190,19 @@ func halideBufferRGBA(data []byte, width, height int) (*C.halide_buffer_t, error
 	))
 	if buf == nil {
 		return nil, errors.WithStack(ErrHalideBufferRGBA)
+	}
+	return (*C.halide_buffer_t)(buf), nil
+}
+
+func halideBufferYUV(data []byte, stride, width, height int) (*C.halide_buffer_t, error) {
+	buf := unsafe.Pointer(C.create_halide_buffer_yuv(
+		(*C.uint8_t)(unsafe.Pointer(&data[0])),
+		C.int(stride),
+		C.int(width),
+		C.int(height),
+	))
+	if buf == nil {
+		return nil, errors.WithStack(ErrHalideBufferYUV)
 	}
 	return (*C.halide_buffer_t)(buf), nil
 }
