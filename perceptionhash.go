@@ -6,7 +6,12 @@ import (
 	"github.com/pkg/errors"
 )
 
-func PerceptionHash(img *image.RGBA) (Hash1024, error) {
+func PerceptionHash(in image.Image) (Hash1024, error) {
+	img, err := ConvertToRGBA(in)
+	if err != nil {
+		return Hash1024{}, errors.WithStack(err)
+	}
+
 	scaled, err := scaleNormal(img, 64, 16)
 	if err != nil {
 		return Hash1024{}, errors.WithStack(err)

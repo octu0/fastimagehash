@@ -6,7 +6,12 @@ import (
 	"github.com/pkg/errors"
 )
 
-func WaveletHash(img *image.RGBA) (Hash1024, error) {
+func WaveletHash(in image.Image) (Hash1024, error) {
+	img, err := ConvertToRGBA(in)
+	if err != nil {
+		return Hash1024{}, errors.WithStack(err)
+	}
+
 	scaled, err := scaleNormal(img, 64, 64)
 	if err != nil {
 		return Hash1024{}, errors.WithStack(err)
