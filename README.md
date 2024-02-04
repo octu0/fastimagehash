@@ -31,26 +31,26 @@ pkg: github.com/octu0/fastimagehash
 cpu: Intel(R) Core(TM) i5-8210Y CPU @ 1.60GHz
 BenchmarkAverageHash
 BenchmarkAverageHash/goimagehash/8x8
-BenchmarkAverageHash/goimagehash/8x8-4         	    2772	    432437 ns/op
+BenchmarkAverageHash/goimagehash/8x8-4         	    2707	    424327 ns/op
 BenchmarkAverageHash/goimagehash/32x32
-BenchmarkAverageHash/goimagehash/32x32-4       	    1951	    567546 ns/op
+BenchmarkAverageHash/goimagehash/32x32-4       	    1836	    570279 ns/op
 BenchmarkAverageHash/fastimagehash/32x32
-BenchmarkAverageHash/fastimagehash/32x32-4     	   39063	     32761 ns/op
+BenchmarkAverageHash/fastimagehash/32x32-4     	   39634	     29911 ns/op
 BenchmarkDifferenceHash
 BenchmarkDifferenceHash/goimagehash/9x8
-BenchmarkDifferenceHash/goimagehash/9x8-4      	    2305	    522748 ns/op
+BenchmarkDifferenceHash/goimagehash/9x8-4      	    2277	    456987 ns/op
 BenchmarkDifferenceHash/goimagehash/33x32
-BenchmarkDifferenceHash/goimagehash/33x32-4    	    1864	    790872 ns/op
+BenchmarkDifferenceHash/goimagehash/33x32-4    	    1874	    592438 ns/op
 BenchmarkDifferenceHash/fastimagehash/33x32
-BenchmarkDifferenceHash/fastimagehash/33x32-4  	   27858	     43084 ns/op
+BenchmarkDifferenceHash/fastimagehash/33x32-4  	   33601	     34354 ns/op
 BenchmarkPerceptionHash
 BenchmarkPerceptionHash/goimagehash/64x64
-BenchmarkPerceptionHash/goimagehash/64x64-4    	    1240	    883755 ns/op
+BenchmarkPerceptionHash/goimagehash/64x64-4    	    1311	    813998 ns/op
 BenchmarkPerceptionHash/fastimagehash/64x64
-BenchmarkPerceptionHash/fastimagehash/64x64-4  	    6826	    164496 ns/op
+BenchmarkPerceptionHash/fastimagehash/64x64-4  	    7542	    146732 ns/op
 BenchmarkWaveletHash
 BenchmarkWaveletHash/fastimagehash/64x64
-BenchmarkWaveletHash/fastimagehash/64x64-4     	    5572	    206503 ns/op
+BenchmarkWaveletHash/fastimagehash/64x64-4     	    6045	    191712 ns/op
 ```
 
 # License
